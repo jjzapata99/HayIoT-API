@@ -1,0 +1,5 @@
+FastAPI
+pymongo
+seaborn
+pandas
+uvicorn[standard]
