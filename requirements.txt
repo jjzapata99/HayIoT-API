@@ -1,5 +1,6 @@
 FastAPI
 pymongo
 seaborn
+psycopg2
 pandas
 uvicorn[standard]
