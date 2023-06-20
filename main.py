@@ -43,4 +43,11 @@ async def create_item(item: sensor):
 async def create_items(item: sensores):
     input_multiple_data(item)
     return None
-
+@app.get('/getSensors')
+async def get(id : str = '', name : str = ''):
+    json_compatible_item_data = jsonable_encoder(getSensors(id,name))
+    return JSONResponse(content=json_compatible_item_data)
+@app.get('/getData')
+async def get(id: str, start: str, end= str):
+    json_compatible_item_data = jsonable_encoder(getData(id,start, end))
+    return JSONResponse(content=json_compatible_item_data)

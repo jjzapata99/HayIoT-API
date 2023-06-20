@@ -58,9 +58,15 @@ def input_multiple_data(sensed : sensor):
         print(postgres.fetchall())
     except:
         print("No es un json")
-
-
-
-
-
+def getSensors(id : str = '', name : str = ''):
+    if name != '' : name = '%'+name+'%'
+    if id != '': id = '%'+ id + '%'
+    postgres.execute("SELECT * FROM sensor WHERE id LIKE %s OR description LIKE %s", (id, name))
+    query= postgres.fetchall()
+    lista = []
+    for i in query:
+        lista.append({'id': i[0], 'siteref': i[1], 'equipref':i[2], 'type':i[3], 'description':i[4]})
+    return lista
+def getData(id,start, end):
+    print('')
 
