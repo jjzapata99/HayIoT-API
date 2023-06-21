@@ -1,3 +1,5 @@
+import json
+
 from fastapi import FastAPI
 from typing import Union
 from pydantic import BaseModel
@@ -44,10 +46,12 @@ async def create_items(item: sensores):
     input_multiple_data(item)
     return None
 @app.get('/getSensors')
-async def get(id : str = '', name : str = ''):
-    json_compatible_item_data = jsonable_encoder(getSensors(id,name))
+async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
+    json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
-@app.get('/getData')
-async def get(id: str, start: str, end= str):
+@app.get("/getData")
+async def get(id: str, start: str, end: str):
     json_compatible_item_data = jsonable_encoder(getData(id,start, end))
-    return JSONResponse(content=json_compatible_item_data)
+    return json_compatible_item_data
+
+

@@ -1,3 +1,5 @@
+import math
+import numpy as np
 import psycopg2 as psycopg2
 import pytz
 import json
@@ -58,15 +60,26 @@ def input_multiple_data(sensed : sensor):
         print(postgres.fetchall())
     except:
         print("No es un json")
-def getSensors(id : str = '', name : str = ''):
-    if name != '' : name = '%'+name+'%'
-    if id != '': id = '%'+ id + '%'
-    postgres.execute("SELECT * FROM sensor WHERE id LIKE %s OR description LIKE %s", (id, name))
-    query= postgres.fetchall()
-    lista = []
-    for i in query:
-        lista.append({'id': i[0], 'siteref': i[1], 'equipref':i[2], 'type':i[3], 'description':i[4]})
-    return lista
+def getSensors(id : str = '', name : str = '', max: int= 10, index: int = 0 ):
+    try:
+        if name != '' : name = '%'+name+'%'
+        if id != '': id = '%'+ id + '%'
+        postgres.execute("SELECT * FROM sensor WHERE id LIKE %s OR description LIKE %s", (id, name))
+        query= postgres.fetchall()
+        lista = []
+        for i in query:
+            lista.append({'id': i[0], 'siteref': i[1], 'equipref':i[2], 'type':i[3], 'description':i[4]})
+        return {'data':lista[index*max: max*(index+1)],'indexs': list(range(math.ceil(len(lista)/max)))}
+    except:
+        return []
 def getData(id,start, end):
-    print('')
+    try:
+        query= {'sensedAt':{'$gte': datetime.datetime.strptime(start, '%d/%m/%Y'), '$lt': datetime.datetime.strptime(end + " 23:59:59", '%d/%m/%Y %H:%M:%S')}, 'id_sensor': id}
+        df_sensed = pd.DataFrame(list(c_sensor.find(query)))
+        df_sensed['_id'] = df_sensed['_id'].astype('|S')
+        df = df_sensed[["id_sensor","description","data","type","sensedAt"]].to_dict(orient='records')
+        if df_sensed.size >= 1:
+            return df
 
+    except:
+        return []
