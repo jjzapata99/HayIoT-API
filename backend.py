@@ -1,14 +1,11 @@
 import math
-import numpy as np
 import psycopg2 as psycopg2
 import pytz
-import json
 from bson import ObjectId
 import datetime
 import pandas as pd
 from pydantic import BaseModel
 from pymongo import MongoClient
-import requests
 
 class sensor(BaseModel):
     description: str
@@ -16,6 +13,7 @@ class sensor(BaseModel):
     equipRef: str
     type: str
     data: str
+    sensedAt : str
 
 postgresdb = psycopg2.connect(
     host="200.126.14.233",
@@ -55,7 +53,7 @@ def input_multiple_data(sensed : sensor):
     try:
         id_sensor = validar_existencia(sensed)
         for i in sensed.data:
-            c_sensor.insert_one({ "id_sensor": id_sensor, "description": sensed.description, "data": sensed.data[i], "type": i ,"sensedAt": datetime.datetime.now(pytz.utc) })
+            c_sensor.insert_one({ "id_sensor": id_sensor, "description": sensed.description, "data": sensed.data[i], "type": i ,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
         postgres.execute("SELECT * FROM sensor")
         print(postgres.fetchall())
     except:

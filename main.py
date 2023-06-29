@@ -25,6 +25,7 @@ class sensores(BaseModel):
     equipRef: str
     type: str
     data: dict
+    sensedAt : str
 app = FastAPI(
     title= 'HayIoT', description= 'Integradora', version= '1.1.0'
 )
