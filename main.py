@@ -14,11 +14,14 @@ from backend import *
 
 
 class sensor(BaseModel):
-    description: str
     siteRef: str
     equipRef: str
+    description: str
     type: str
-    data: str
+class equipo(BaseModel):
+    id: str
+    siteRef: str
+    equip: str
 class sensores(BaseModel):
     description: str
     siteRef: str
@@ -39,13 +42,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.post("/sensor/")
-async def create_item(item: sensor):
-    input_data(item)
+
 @app.post("/sensores/")
 async def create_items(item: sensores):
     input_multiple_data(item)
     return None
+@app.post("/pushSensor/")
+async def create_items(item: sensor):
+    return input_page_data_sensor(item)
+@app.post("/pushEquip/")
+async def create_items(item: equipo):
+    return input_page_equip(item)
 @app.get('/getSensors')
 async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
     json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))

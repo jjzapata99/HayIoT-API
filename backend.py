@@ -14,7 +14,10 @@ class sensor(BaseModel):
     type: str
     data: str
     sensedAt : str
-
+class equipo(BaseModel):
+    id: str
+    siteRef: str
+    equip: str
 postgresdb = psycopg2.connect(
     host="200.126.14.233",
     database="HayIoT",
@@ -28,6 +31,7 @@ postgres.execute("SELECT * FROM site")
 print(postgres.fetchall())
 postgres.execute("SELECT * FROM equip")
 print(postgres.fetchall())
+postgres_insert_query2 = """INSERT INTO equip (id, siteRef, equip) VALUES (%s,%s,%s)"""
 postgres_insert_query3 = """ INSERT INTO sensor (id, siteRef, equipRef, type, description) VALUES (%s,%s,%s,%s,%s)"""
 def validar_existencia(sended : sensor):
     postgres.execute("SELECT * FROM sensor WHERE siteref = %s AND equipref = %s AND type = %s AND description = %s",
@@ -81,3 +85,25 @@ def getData(id,start, end):
 
     except:
         return []
+def input_page_data_sensor(s: sensor):
+    try:
+        return validar_existencia(s)
+    except:
+        print('Error al registrar el sensor')
+def input_page_equip(equip : equipo):
+    try:
+        postgres.execute("SELECT * FROM equip WHERE id = %s AND siteRef = %s AND equip = %s",
+                         (equip.id, equip.siteRef, equip.equip))
+        query =postgres.fetchall()
+        if len(query) == 0:
+            record_to_insert = (equip.id, equip.siteRef, equip.equip)
+            postgres.execute(postgres_insert_query2, record_to_insert)
+            postgresdb.commit()
+            return 1
+        else:
+            return 0
+    except:
+        print('Erro al ingresar el equipo')
+        return 0
+    
+    
