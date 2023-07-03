@@ -23,11 +23,8 @@ class equipo(BaseModel):
     siteRef: str
     equip: str
 class sensores(BaseModel):
-    description: str
-    siteRef: str
-    equipRef: str
-    type: str
-    data: dict
+    id: str
+    data: list
     sensedAt : str
 app = FastAPI(
     title= 'HayIoT', description= 'Integradora', version= '1.1.0'
@@ -45,8 +42,7 @@ app.add_middleware(
 
 @app.post("/sensores/")
 async def create_items(item: sensores):
-    input_multiple_data(item)
-    return None
+    return input_multiple_data(item)
 @app.post("/pushSensor/")
 async def create_items(item: sensor):
     return input_page_data_sensor(item)

@@ -8,11 +8,8 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 
 class sensor(BaseModel):
-    description: str
-    siteRef: str
-    equipRef: str
-    type: str
-    data: str
+    id: str
+    data: list
     sensedAt : str
 class equipo(BaseModel):
     id: str
@@ -33,35 +30,33 @@ postgres.execute("SELECT * FROM equip")
 print(postgres.fetchall())
 postgres_insert_query2 = """INSERT INTO equip (id, siteRef, equip) VALUES (%s,%s,%s)"""
 postgres_insert_query3 = """ INSERT INTO sensor (id, siteRef, equipRef, type, description) VALUES (%s,%s,%s,%s,%s)"""
+
 def validar_existencia(sended : sensor):
-    postgres.execute("SELECT * FROM sensor WHERE siteref = %s AND equipref = %s AND type = %s AND description = %s",
-                     (sended.siteRef, sended.equipRef, sended.type, sended.description))
+    postgres.execute("SELECT * FROM sensor WHERE id = %s", (sended.id, ))
     query =postgres.fetchall()
-    if len(query) == 0:
-        id_sensor= str(ObjectId())
-        record_to_insert = (id_sensor, sended.siteRef, sended.equipRef, sended.type, sended.description)
-        postgres.execute(postgres_insert_query3, record_to_insert)
-        postgresdb.commit()
-        return id_sensor
+    if len(query) > 0:
+        return 1
     else:
-        return query[0][0]
-def input_data(sensed : sensor):
-    try:
-        id_sensor = validar_existencia(sensed)
-        c_sensor.insert_one({ "id_sensor": id_sensor, "description": sensed.description, "data": sensed.data, "type": sensed.type ,"sensedAt": datetime.datetime.now(pytz.utc) })
-        postgres.execute("SELECT * FROM sensor")
-        print(postgres.fetchall())
-    except:
-        print("Error al ingresar los datos")
+        return 'asd'
+#def input_data(sensed : sensor):
+#    try:
+#        id_sensor = validar_existencia(sensed)
+#        c_sensor.insert_one({ "id_sensor": id_sensor, "description": sensed.description, "data": sensed.data, "type": sensed.type ,"sensedAt": datetime.datetime.now(pytz.utc) })
+#        postgres.execute("SELECT * FROM sensor")
+#        print(postgres.fetchall())
+#    except:
+#        print("Error al ingresar los datos")
+#
 def input_multiple_data(sensed : sensor):
     try:
-        id_sensor = validar_existencia(sensed)
-        for i in sensed.data:
-            c_sensor.insert_one({ "id_sensor": id_sensor, "description": sensed.description, "data": sensed.data[i], "type": i ,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
-        postgres.execute("SELECT * FROM sensor")
-        print(postgres.fetchall())
+        if(validar_existencia(sensed)):
+            for i in sensed.data:
+                c_sensor.insert_one({ "id_sensor": sensed.id, "data": i['val'],"type": i['type'] ,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
+            return 1
     except:
-        print("No es un json")
+        return 'Error al ingresar el sensor'
+
+
 def getSensors(id : str = '', name : str = '', max: int= 10, index: int = 0 ):
     try:
         if name != '' : name = '%'+name+'%'
