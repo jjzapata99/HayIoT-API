@@ -59,14 +59,13 @@ def validar_existencia(sended : sensors):
 def input_multiple_data(sensed : sensors):
     try:
         if(validar_existencia(sensed)):
+            d= sensed.sensedAt
+            if(d==''):
+                d= datetime.datetime.now(pytz.utc)
+            else:
+                d=datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S')
             for i in sensed.data:
-                d= sensed.sensedAt
-                if(d==''):
-                    d= datetime.datetime.now(pytz.utc)
-                else:
-                    d=datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S')
                 c_sensor.insert_one({ "id_sensor": sensed.id, "data": i.val,"type": i.type,"sensedAt":d})
-
         return 1
     except:
         print('Error al ingresar el sensado')
