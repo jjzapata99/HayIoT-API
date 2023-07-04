@@ -6,11 +6,16 @@ import datetime
 import pandas as pd
 from pydantic import BaseModel
 from pymongo import MongoClient
-
 class sensor(BaseModel):
+    siteRef: str
+    equipRef: str
+    description: str
+    type: str
+class sensors(BaseModel):
     id: str
     data: list
     sensedAt : str
+
 class equipo(BaseModel):
     id: str
     siteRef: str
@@ -31,7 +36,7 @@ print(postgres.fetchall())
 postgres_insert_query2 = """INSERT INTO equip (id, siteRef, equip) VALUES (%s,%s,%s)"""
 postgres_insert_query3 = """ INSERT INTO sensor (id, siteRef, equipRef, type, description) VALUES (%s,%s,%s,%s,%s)"""
 
-def validar_existencia(sended : sensor):
+def validar_existencia(sended : sensors):
     postgres.execute("SELECT * FROM sensor WHERE id = %s", (sended.id, ))
     query =postgres.fetchall()
     if len(query) > 0:
@@ -75,7 +80,6 @@ def getData(id,start, end):
         df_sensed = pd.DataFrame(list(c_sensor.find(query)))
         df_sensed['_id'] = df_sensed['_id'].astype('|S')
         df = df_sensed[["id_sensor","data","type","sensedAt"]].to_dict(orient='records')
-        print(df)
         if df_sensed.size >= 1:
             return df
 
@@ -83,9 +87,20 @@ def getData(id,start, end):
         return []
 def input_page_data_sensor(s: sensor):
     try:
-        return validar_existencia(s)
+        postgres.execute("SELECT * FROM sensor WHERE siteref = %s AND equipref = %s AND type = %s AND description = %s",
+                         (s.siteRef, s.equipRef, s.type, s.description))
+        query =postgres.fetchall()
+        if len(query) == 0:
+            id_sensor= str(ObjectId())
+            record_to_insert = (id_sensor, s.siteRef, s.equipRef, s.type, s.description)
+            postgres.execute(postgres_insert_query3, record_to_insert)
+            postgresdb.commit()
+            return id_sensor
+        else:
+            return query[0][0]
     except:
-        print('Error al registrar el sensor')
+        return 0
+
 def input_page_equip(equip : equipo):
     try:
         postgres.execute("SELECT * FROM equip WHERE id = %s AND siteRef = %s AND equip = %s",

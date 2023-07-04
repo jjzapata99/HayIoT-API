@@ -27,7 +27,9 @@ class sensores(BaseModel):
     data: list
     sensedAt : str
 app = FastAPI(
-    title= 'HayIoT', description= 'Integradora', version= '1.1.0'
+    title= 'HayIoT', description= 'Integradora', version= '1.1.0',
+    redoc_url=None
+
 )
 origins = [
     "*"
@@ -43,19 +45,20 @@ app.add_middleware(
 @app.post("/sensores/")
 async def create_items(item: sensores):
     return input_multiple_data(item)
-@app.post("/pushSensor/")
-async def create_items(item: sensor):
-    return input_page_data_sensor(item)
-@app.post("/pushEquip/")
-async def create_items(item: equipo):
-    return input_page_equip(item)
-@app.get('/getSensors')
-async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
-    json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
-    return JSONResponse(content=json_compatible_item_data)
 @app.get("/getData")
 async def get(id: str, start: str, end: str):
     json_compatible_item_data = jsonable_encoder(getData(id,start, end))
     return json_compatible_item_data
+@app.post("/pushSensor/", include_in_schema=False)
+async def create_items(item: sensor):
+    return input_page_data_sensor(item)
+@app.post("/pushEquip/", include_in_schema=False)
+async def create_items(item: equipo):
+    return input_page_equip(item)
+@app.get('/getSensors', include_in_schema=False)
+async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
+    json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
+    return JSONResponse(content=json_compatible_item_data)
+
 
 
