@@ -60,15 +60,17 @@ def input_multiple_data(sensed : sensors):
     try:
         if(validar_existencia(sensed)):
             for i in sensed.data:
-                c_sensor.insert_one({ "id_sensor": sensed.id, "data": i.val,"type": i.type,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
-            return 1
+                d= sensed.sensedAt
+                if(d==''):
+                    d= datetime.datetime.now(pytz.utc)
+                else:
+                    d=datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S')
+                c_sensor.insert_one({ "id_sensor": sensed.id, "data": i.val,"type": i.type,"sensedAt":d})
+
+        return 1
     except:
         print('Error al ingresar el sensado')
         return 0
-
-
-
-
 def getSensors(id : str = '', name : str = '', max: int= 10, index: int = 0 ):
     try:
         if name != '' : name = '%'+name+'%'
