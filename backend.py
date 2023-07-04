@@ -6,6 +6,10 @@ import datetime
 import pandas as pd
 from pydantic import BaseModel
 from pymongo import MongoClient
+
+class dataModel(BaseModel):
+    val: float
+    type: str
 class sensor(BaseModel):
     siteRef: str
     equipRef: str
@@ -13,7 +17,7 @@ class sensor(BaseModel):
     type: str
 class sensors(BaseModel):
     id: str
-    data: list
+    data: list[dataModel]
     sensedAt : str
 
 class equipo(BaseModel):
@@ -52,14 +56,17 @@ def validar_existencia(sended : sensors):
 #    except:
 #        print("Error al ingresar los datos")
 #
-def input_multiple_data(sensed : sensor):
+def input_multiple_data(sensed : sensors):
     try:
         if(validar_existencia(sensed)):
             for i in sensed.data:
-                c_sensor.insert_one({ "id_sensor": sensed.id, "data": i['val'],"type": i['type'] ,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
+                c_sensor.insert_one({ "id_sensor": sensed.id, "data": i.val,"type": i.type,"sensedAt": datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S') })
             return 1
     except:
-        return 'Error al ingresar el sensor'
+        print('Error al ingresar el sensado')
+        return 0
+
+
 
 
 def getSensors(id : str = '', name : str = '', max: int= 10, index: int = 0 ):

@@ -12,6 +12,9 @@ import pytz
 
 from backend import *
 
+class dataModel(BaseModel):
+    val: float
+    type: str
 
 class sensor(BaseModel):
     siteRef: str
@@ -24,7 +27,7 @@ class equipo(BaseModel):
     equip: str
 class sensores(BaseModel):
     id: str
-    data: list
+    data: list[dataModel]
     sensedAt : str
 app = FastAPI(
     title= 'HayIoT', description= 'Integradora', version= '1.1.0',
