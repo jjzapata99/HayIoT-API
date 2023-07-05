@@ -24,6 +24,9 @@ class equipo(BaseModel):
     id: str
     siteRef: str
     equip: str
+class site(BaseModel):
+    id: str
+    site: str
 postgresdb = psycopg2.connect(
     host="200.126.14.233",
     database="HayIoT",
@@ -33,15 +36,12 @@ postgres = postgresdb.cursor()
 client = MongoClient('mongodb://200.126.14.233:27017/')
 db= client['HayIoT']
 c_sensor= db['sensor']
-postgres.execute("SELECT * FROM site")
-print(postgres.fetchall())
-postgres.execute("SELECT * FROM equip")
-print(postgres.fetchall())
+postgres_insert_query = """INSERT INTO site (id, site) VALUES (%s,%s)"""
 postgres_insert_query2 = """INSERT INTO equip (id, siteRef, equip) VALUES (%s,%s,%s)"""
 postgres_insert_query3 = """ INSERT INTO sensor (id, siteRef, equipRef, type, description) VALUES (%s,%s,%s,%s,%s)"""
 
 def validar_existencia(sended : sensors):
-    postgres.execute("SELECT * FROM sensor WHERE id = %s", (sended.id, ))
+    postgres.execute("SELECT * FROM sensor WHERE LOWER(id) = %s", (sended.id.lower(), ))
     query =postgres.fetchall()
     if len(query) > 0:
         return 1
@@ -72,9 +72,9 @@ def input_multiple_data(sensed : sensors):
         return 0
 def getSensors(id : str = '', name : str = '', max: int= 10, index: int = 0 ):
     try:
-        if name != '' : name = '%'+name+'%'
-        if id != '': id = '%'+ id + '%'
-        postgres.execute("SELECT * FROM sensor WHERE id LIKE %s OR description LIKE %s", (id, name))
+        if name != '' : name = '%'+name.lower()+'%'
+        if id != '': id = '%'+ id.lower() + '%'
+        postgres.execute("SELECT * FROM sensor WHERE LOWER(id) LIKE %s OR LOWER(description) LIKE %s", (id, name))
         query= postgres.fetchall()
         lista = []
         for i in query:
@@ -95,8 +95,8 @@ def getData(id,start, end):
         return []
 def input_page_data_sensor(s: sensor):
     try:
-        postgres.execute("SELECT * FROM sensor WHERE siteref = %s AND equipref = %s AND type = %s AND description = %s",
-                         (s.siteRef, s.equipRef, s.type, s.description))
+        postgres.execute("SELECT * FROM sensor WHERE LOWER(siteref) = %s AND LOWER(equipref) = %s AND LOWER(type) = %s AND LOWER(description) = %s",
+                         (s.siteRef.lower(), s.equipRef.lower(), s.type.lower(), s.description.lower()))
         query =postgres.fetchall()
         if len(query) == 0:
             id_sensor= str(ObjectId())
@@ -111,8 +111,8 @@ def input_page_data_sensor(s: sensor):
 
 def input_page_equip(equip : equipo):
     try:
-        postgres.execute("SELECT * FROM equip WHERE id = %s AND siteRef = %s AND equip = %s",
-                         (equip.id, equip.siteRef, equip.equip))
+        postgres.execute("SELECT * FROM equip WHERE LOWER(id) = %s AND LOWER(siteRef) = %s AND LOWER(equip) = %s",
+                         (equip.id.lower(), equip.siteRef.lower(), equip.equip.lower()))
         query =postgres.fetchall()
         if len(query) == 0:
             record_to_insert = (equip.id, equip.siteRef, equip.equip)
@@ -124,5 +124,32 @@ def input_page_equip(equip : equipo):
     except:
         print('Erro al ingresar el equipo')
         return 0
-    
-    
+def input_page_site(sit : site):
+    try:
+        postgres.execute("SELECT * FROM site WHERE LOWER(id) = %s AND LOWER(site) = %s",
+                         (sit.id.lower(), sit.site.lower()))
+        query =postgres.fetchall()
+        if len(query) == 0:
+            record_to_insert = (sit.id, sit.site)
+            postgres.execute(postgres_insert_query, record_to_insert)
+            postgresdb.commit()
+            return 1
+        else:
+            return 0
+    except:
+        print('Erro al ingresar el equipo')
+        return 0
+def getSites():
+    try:
+        postgres.execute("SELECT * FROM site")
+        q=postgres.fetchall()
+        return ({'id':x, 'site':y} for x, y in q)
+    except:
+        return [{'id':'', 'site':''}]
+def getEquips():
+    try:
+        postgres.execute("SELECT * FROM equip")
+        q = postgres.fetchall()
+        return ({'id':x, 'siteRef':y, 'equip':z} for x, y,z in q)
+    except:
+        return [{'id': '', 'siteRef': '', 'equip': ''}]

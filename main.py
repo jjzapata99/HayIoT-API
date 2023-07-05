@@ -29,6 +29,9 @@ class sensores(BaseModel):
     id: str
     data: list[dataModel]
     sensedAt : str
+class site(BaseModel):
+    id: str
+    site: str
 app = FastAPI(
     title= 'HayIoT', description= 'Integradora', version= '1.1.0',
     redoc_url=None
@@ -58,10 +61,19 @@ async def create_items(item: sensor):
 @app.post("/pushEquip/", include_in_schema=False)
 async def create_items(item: equipo):
     return input_page_equip(item)
+@app.post("/pushSite/",include_in_schema=False)
+async def create_items(item: site):
+    return input_page_site(item)
 @app.get('/getSensors', include_in_schema=False)
 async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
     json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
-
-
+@app.get('/getSites',include_in_schema=False)
+async def get():
+    json_compatible_item_data = jsonable_encoder(getSites())
+    return JSONResponse(content=json_compatible_item_data)
+@app.get('/getEquips',include_in_schema=False)
+async def get():
+    json_compatible_item_data = jsonable_encoder(getEquips())
+    return JSONResponse(content=json_compatible_item_data)
 
