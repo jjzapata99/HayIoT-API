@@ -55,6 +55,17 @@ async def create_items(item: sensores):
 async def get(id: str, start: str, end: str):
     json_compatible_item_data = jsonable_encoder(getData(id,start, end))
     return json_compatible_item_data
+@app.get("/getHaystackTags")
+async def get():
+    json_compatible_item_data = jsonable_encoder(get_Haystack_tags())
+    return json_compatible_item_data
+@app.get('/getSensors', include_in_schema=False)
+async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
+    json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
+    return JSONResponse(content=json_compatible_item_data)
+@app.get("/getLastSensed", include_in_schema=False)
+async def create_items(id:str):
+    return getLastDate(id)
 @app.post("/pushSensor/", include_in_schema=False)
 async def create_items(item: sensor):
     return input_page_data_sensor(item)
@@ -64,10 +75,7 @@ async def create_items(item: equipo):
 @app.post("/pushSite/",include_in_schema=False)
 async def create_items(item: site):
     return input_page_site(item)
-@app.get('/getSensors', include_in_schema=False)
-async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
-    json_compatible_item_data = jsonable_encoder(getSensors(id,name, int(max), int(index)))
-    return JSONResponse(content=json_compatible_item_data)
+
 @app.get('/getSites',include_in_schema=False)
 async def get():
     json_compatible_item_data = jsonable_encoder(getSites())
