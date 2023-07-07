@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 import requests
 
+
 url = "https://project-haystack.org/download/defs.json"
 
 class dataModel(BaseModel):
@@ -55,13 +56,15 @@ postgres_insert_query3 = """ INSERT INTO sensor (id, siteRef, equipRef, type, de
 
 
 def validar_existencia(sended: sensors):
-    postgres.execute("SELECT * FROM sensor WHERE LOWER(id) = %s", (sended.id.lower(),))
-    query = postgres.fetchall()
-    if len(query) > 0:
-        return 1
-    else:
-        return 'asd'
-
+    try:
+        postgres.execute("SELECT * FROM sensor WHERE LOWER(id) = %s", (sended.id.lower(),))
+        query = postgres.fetchall()
+        if len(query) > 0:
+            return 1
+        else:
+            return 'asd'
+    except Exception as e:
+        print(f'{e}')
 
 # def input_data(sensed : sensor):
 #    try:
@@ -83,7 +86,8 @@ def input_multiple_data(sensed: sensors):
             for i in sensed.data:
                 c_sensor.insert_one({"id_sensor": sensed.id, "data": i.val, "type": i.type, "sensedAt": d})
         return 1
-    except:
+    except Exception as e:
+        print(f'{e}')
         print('Error al ingresar el sensado')
         return 0
 
@@ -98,7 +102,8 @@ def getSensors(id: str = '', name: str = '', max: int = 10, index: int = 0):
         for i in query:
             lista.append({'id': i[0], 'siteref': i[1], 'equipref': i[2], 'type': i[3], 'description': i[4]})
         return {'data': lista[index * max: max * (index + 1)], 'indexs': list(range(math.ceil(len(lista) / max)))}
-    except:
+    except Exception as e:
+        print(f'{e}')
         return []
 def getLastDate(id : str):
     try:
@@ -107,8 +112,8 @@ def getLastDate(id : str):
         else: q = 'Nan'
         return {'lastSensed':q}
 
-    except:
-        print('')
+    except Exception as e:
+        print(f'{e}')
 
 
 
@@ -123,7 +128,8 @@ def getData(id, start, end):
         if df_sensed.size >= 1:
             return df
 
-    except:
+    except Exception as e:
+        print(f'{e}')
         return []
 
 
@@ -141,7 +147,8 @@ def input_page_data_sensor(s: sensor):
             return id_sensor
         else:
             return query[0][0]
-    except:
+    except Exception as e:
+        print(f'{e}')
         return 0
 
 
@@ -157,8 +164,9 @@ def input_page_equip(equip: equipo):
             return 1
         else:
             return 0
-    except:
-        print('Erro al ingresar el equipo')
+    except Exception as e:
+        postgresdb.rollback()
+        print(f'Erro al ingresar el equipo: {e}')
         return 0
 
 
@@ -174,8 +182,10 @@ def input_page_site(sit: site):
             return 1
         else:
             return 0
-    except:
-        print('Erro al ingresar el equipo')
+    except Exception as e:
+        print(f'{e}')
+        postgresdb.rollback()
+        print('Erro al ingresar el sitio')
         return 0
 
 
@@ -184,7 +194,8 @@ def getSites():
         postgres.execute("SELECT * FROM site")
         q = postgres.fetchall()
         return ({'id': x, 'site': y} for x, y in q)
-    except:
+    except Exception as e:
+        print(f'{e}')
         return [{'id': '', 'site': ''}]
 
 
@@ -193,7 +204,8 @@ def getEquips():
         postgres.execute("SELECT * FROM equip")
         q = postgres.fetchall()
         return ({'id': x, 'siteRef': y, 'equip': z} for x, y, z in q)
-    except:
+    except Exception as e:
+        print(f'{e}')
         return [{'id': '', 'siteRef': '', 'equip': ''}]
 def get_Haystack_tags():
     try:
