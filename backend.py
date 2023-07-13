@@ -147,12 +147,12 @@ def input_page_data_sensor(s: sensor):
             record_to_insert = (id_sensor, s.siteRef, s.equipRef, s.type, s.description)
             postgres.execute(postgres_insert_query3, record_to_insert)
             postgresdb.commit()
-            return id_sensor
+            return {'id':id_sensor,'exist':1}
         else:
-            return query[0][0]
+            return {'id':query[0][0],'exist':0}
     except Exception as e:
         print(f'{e}')
-        return 0
+        return {'id':'','exist':0}
 
 
 def input_page_equip(equip: equipo):
@@ -165,14 +165,10 @@ def input_page_equip(equip: equipo):
             postgres.execute(postgres_insert_query2, record_to_insert)
             postgresdb.commit()
             return 1
-        else:
-            return 0
     except Exception as e:
         postgresdb.rollback()
         print(f'Erro al ingresar el equipo: {e}')
         return 0
-
-
 def input_page_site(sit: site):
     try:
         postgres.execute("SELECT * FROM site WHERE LOWER(id) = %s AND LOWER(site) = %s",
@@ -183,8 +179,6 @@ def input_page_site(sit: site):
             postgres.execute(postgres_insert_query, record_to_insert)
             postgresdb.commit()
             return 1
-        else:
-            return 0
     except Exception as e:
         print(f'{e}')
         postgresdb.rollback()
