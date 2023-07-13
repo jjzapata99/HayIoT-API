@@ -105,16 +105,15 @@ def getSensors(id: str = '', name: str = '', max: int = 10, index: int = 0):
     except Exception as e:
         print(f'{e}')
         return []
+
 def getLastDate(id : str):
     try:
         q=pd.DataFrame(list( c_sensor.find({'id_sensor':id},{'sensedAt':1}).sort('sensedAt', pymongo.DESCENDING).limit(1)))
         if(len(q)>0): q =q['sensedAt'][0]
         else: q = 'Nan'
         return {'lastSensed':q}
-
     except Exception as e:
         print(f'{e}')
-
 
 
 def getData(id, start, end):
@@ -198,6 +197,15 @@ def getSites():
         print(f'{e}')
         return [{'id': '', 'site': ''}]
 
+def getAllSensors():
+    try:
+        postgres.execute("SELECT * FROM sensor")
+        q = postgres.fetchall()
+        return ({'id': x, 'siteref': y, 'equipref': z, 'type': w, 'description': v} for x, y, z, w, v in q)
+    except Exception as e:
+        print(f'{e}')
+        return [{'id': '', 'siteref': '', 'equipref': '', 'type': '', 'description': ''}]
+
 
 def getEquips():
     try:
@@ -207,6 +215,8 @@ def getEquips():
     except Exception as e:
         print(f'{e}')
         return [{'id': '', 'siteRef': '', 'equip': ''}]
+    
+
 def get_Haystack_tags():
     try:
         response = requests.get(url)

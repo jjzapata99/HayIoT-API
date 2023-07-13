@@ -84,4 +84,7 @@ async def get():
 async def get():
     json_compatible_item_data = jsonable_encoder(getEquips())
     return JSONResponse(content=json_compatible_item_data)
-
+@app.get('/getAllSensors',include_in_schema=False)
+async def get():
+    json_compatible_item_data = jsonable_encoder(getAllSensors())
+    return JSONResponse(content=json_compatible_item_data)
