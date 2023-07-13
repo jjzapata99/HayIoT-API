@@ -15,7 +15,12 @@ from backend import *
 class dataModel(BaseModel):
     val: float
     type: str
-
+class sensorPage(BaseModel):
+    id: str
+    siteRef: str
+    equipRef: str
+    description: str
+    type: str
 class sensor(BaseModel):
     siteRef: str
     equipRef: str
@@ -75,16 +80,19 @@ async def create_items(item: equipo):
 @app.post("/pushSite/",include_in_schema=False)
 async def create_items(item: site):
     return input_page_site(item)
-
+@app.post('/editDataSensor/')
+async def get(item: sensorPage):
+    return (input_edited_sensor(item))
 @app.get('/getSites',include_in_schema=False)
-async def get():
-    json_compatible_item_data = jsonable_encoder(getSites())
+async def get(max: Union[str, None]= '10', index: Union[str, None] = '0'):
+    json_compatible_item_data = jsonable_encoder(getSites(int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
 @app.get('/getEquips',include_in_schema=False)
-async def get():
-    json_compatible_item_data = jsonable_encoder(getEquips())
+async def get(max: Union[str, None]= '10', index: Union[str, None] = '0'):
+    json_compatible_item_data = jsonable_encoder(getEquips(int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
 @app.get('/getAllSensors',include_in_schema=False)
-async def get():
-    json_compatible_item_data = jsonable_encoder(getAllSensors())
+async def get(max: Union[str, None]= '10', index: Union[str, None] = '0'):
+    json_compatible_item_data = jsonable_encoder(getAllSensors(int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
+

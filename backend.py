@@ -15,8 +15,12 @@ url = "https://project-haystack.org/download/defs.json"
 class dataModel(BaseModel):
     val: float
     type: str
-
-
+class sensorPage(BaseModel):
+    id: str
+    siteRef: str
+    equipRef: str
+    description: str
+    type: str
 class sensor(BaseModel):
     siteRef: str
     equipRef: str
@@ -96,7 +100,7 @@ def getSensors(id: str = '', name: str = '', max: int = 10, index: int = 0):
     try:
         if name != '': name = '%' + name.lower() + '%'
         if id != '': id = '%' + id.lower() + '%'
-        postgres.execute("SELECT * FROM sensor WHERE LOWER(id) LIKE %s OR LOWER(description) LIKE %s", (id, name))
+        postgres.execute("SELECT * FROM sensor WHERE LOWER(id) LIKE %s OR LOWER(description) LIKE %s ORDER BY description DESC", (id, name))
         query = postgres.fetchall()
         lista = []
         for i in query:
@@ -186,35 +190,55 @@ def input_page_site(sit: site):
         postgresdb.rollback()
         print('Erro al ingresar el sitio')
         return 0
-
-
-def getSites():
+def input_edited_sensor(sensor : sensorPage):
     try:
-        postgres.execute("SELECT * FROM site")
-        q = postgres.fetchall()
-        return ({'id': x, 'site': y} for x, y in q)
+        postgres.execute("UPDATE sensor SET siteref= %s , equipref= %s, type= %s, description= %s WHERE id= %s",
+                         (sensor.siteRef, sensor.equipRef, sensor.type, sensor.description, sensor.id))
+        postgresdb.commit()
+        return 1
     except Exception as e:
+        postgresdb.rollback()
         print(f'{e}')
-        return [{'id': '', 'site': ''}]
-
-def getAllSensors():
+        return 0
+def getSites(max, index):
     try:
-        postgres.execute("SELECT * FROM sensor")
+        postgres.execute("SELECT * FROM site ORDER BY id DESC")
         q = postgres.fetchall()
-        return ({'id': x, 'siteref': y, 'equipref': z, 'type': w, 'description': v} for x, y, z, w, v in q)
+        lista= []
+        for i in q:
+            lista.append({'id': i[0], 'site': i[1]})
+        return {'data': lista[index * max: max * (index + 1)], 'indexs': list(range(math.ceil(len(lista) / max)))}
     except Exception as e:
+        postgresdb.rollback()
+        print(f'{e}')
+        return {'data':{'id': '', 'site': ''},'indexs':[]}
+
+def getAllSensors(max: int, index: int):
+    try:
+        postgres.execute("SELECT * FROM sensor ORDER BY description DESC")
+        q = postgres.fetchall()
+        lista= []
+        for i in q:
+            lista.append({'id': i[0], 'siteref': i[1], 'equipref': i[2], 'type': i[3], 'description': i[4]})
+        return {'data': lista[index * max: max * (index + 1)], 'indexs': list(range(math.ceil(len(lista) / max)))}
+    except Exception as e:
+        postgresdb.rollback()
         print(f'{e}')
         return [{'id': '', 'siteref': '', 'equipref': '', 'type': '', 'description': ''}]
 
 
-def getEquips():
+def getEquips(max, index):
     try:
-        postgres.execute("SELECT * FROM equip")
+        postgres.execute("SELECT * FROM equip ORDER BY id DESC")
         q = postgres.fetchall()
-        return ({'id': x, 'siteRef': y, 'equip': z} for x, y, z in q)
+        lista= []
+        for i in q:
+            lista.append({'id': i[0], 'siteref': i[1], 'equip': i[2]})
+        return {'data': lista[index * max: max * (index + 1)], 'indexs': list(range(math.ceil(len(lista) / max)))}
     except Exception as e:
+        postgresdb.rollback()
         print(f'{e}')
-        return [{'id': '', 'siteRef': '', 'equip': ''}]
+        return {'data': {'id': '', 'siteRef': '', 'equip': ''}, 'indexs':[]}
     
 
 def get_Haystack_tags():
