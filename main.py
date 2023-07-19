@@ -1,3 +1,5 @@
+import asyncio
+import concurrent.futures
 import json
 
 from fastapi import FastAPI
@@ -58,8 +60,8 @@ async def create_items(item: sensores):
     return input_multiple_data(item)
 @app.get("/getData")
 async def get(id: str, start: str, end: str):
-    json_compatible_item_data = jsonable_encoder(getData(id,start, end))
-    return json_compatible_item_data
+     return getData(id,start, end)
+
 @app.get("/getHaystackTags")
 async def get():
     json_compatible_item_data = jsonable_encoder(get_Haystack_tags())

@@ -122,15 +122,18 @@ def getLastDate(id : str):
 
 def getData(id, start, end):
     try:
-        query = {'sensedAt': {'$gte': datetime.datetime.strptime(start, '%d/%m/%Y'),
-                              '$lt': datetime.datetime.strptime(end + " 23:59:59", '%d/%m/%Y %H:%M:%S')},
+        format = '%d/%m/%Y'
+        if(len(start)>10):
+            format= format+' %H:%M:%S'
+        if not(len(end) > 10):
+            end = end +" 23:59:59"
+        query = {'sensedAt': {'$gte': datetime.datetime.strptime(start, format),
+                              '$lt': datetime.datetime.strptime(end, '%d/%m/%Y %H:%M:%S')},
                  'id_sensor': id}
-        df_sensed = pd.DataFrame(list(c_sensor.find(query)))
-        df_sensed['_id'] = df_sensed['_id'].astype('|S')
-        df = df_sensed[["id_sensor", "data", "type", "sensedAt"]].to_dict(orient='records')
+        df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0,"id_sensor":1, "data":1, "type":1, "sensedAt":1})))
+        df = df_sensed.to_dict(orient='records')
         if df_sensed.size >= 1:
             return df
-
     except Exception as e:
         print(f'{e}')
         return []
