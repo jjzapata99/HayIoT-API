@@ -1,4 +1,6 @@
 import math
+from http.client import HTTPException
+
 import psycopg2 as psycopg2
 import pymongo
 import pytz
@@ -130,7 +132,7 @@ def getData(id, start, end):
         query = {'sensedAt': {'$gte': datetime.datetime.strptime(start, format),
                               '$lt': datetime.datetime.strptime(end, '%d/%m/%Y %H:%M:%S')},
                  'id_sensor': id}
-        df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0,"id_sensor":1, "data":1, "type":1, "sensedAt":1})))
+        df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1})))
         df = df_sensed.to_dict(orient='records')
         if df_sensed.size >= 1:
             return df
@@ -236,7 +238,45 @@ def getEquips(max, index):
         postgresdb.rollback()
         print(f'{e}')
         return {'data': {'id': '', 'siteRef': '', 'equip': ''}, 'indexs':[]}
-    
+def deleteSite(site_id: str):
+    try:
+        postgres.execute("SELECT * FROM site WHERE LOWER(id) = %s", (site_id.lower(),))
+        query = postgres.fetchall()
+        if(len(query)>0):
+            postgres.execute("DELETE FROM site WHERE id = %s", (site_id,))
+            postgresdb.commit()
+            return {"message": "eliminado correctamente"}
+        else:
+            return {"message": "no encontrado"}
+    except Exception as e:
+        postgresdb.rollback()
+        raise HTTPException(status_code=500, detail="Error al eliminar")
+def deleteEquip(equip_id: str):
+    try:
+        postgres.execute("SELECT * FROM equip WHERE LOWER(id) = %s", (equip_id.lower(),))
+        query = postgres.fetchall()
+        if(len(query)>0):
+            postgres.execute("DELETE FROM equip WHERE id = %s", (equip_id,))
+            postgresdb.commit()
+            return {"message": "eliminado correctamente"}
+        else:
+            return {"message": "no encontrado"}
+    except Exception as e:
+        postgresdb.rollback()
+        raise HTTPException(status_code=500, detail="Error al eliminar")
+def deleteSensor(sensor_id: str):
+    try:
+        postgres.execute("SELECT * FROM sensor WHERE LOWER(id) = %s", (sensor_id.lower(),))
+        query = postgres.fetchall()
+        if(len(query)>0):
+            postgres.execute("DELETE FROM sensor WHERE id = %s", (sensor_id,))
+            postgresdb.commit()
+            return {"message": "eliminado correctamente"}
+        else:
+            return {"message": "no encontrado"}
+    except Exception as e:
+        postgresdb.rollback()
+        raise HTTPException(status_code=500, detail="Error al eliminar")
 
 def get_Haystack_tags():
     try:

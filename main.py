@@ -82,7 +82,7 @@ async def create_items(item: equipo):
 @app.post("/pushSite/",include_in_schema=False)
 async def create_items(item: site):
     return input_page_site(item)
-@app.post('/editDataSensor/')
+@app.post('/editDataSensor/', include_in_schema=False)
 async def get(item: sensorPage):
     return (input_edited_sensor(item))
 @app.get('/getSites',include_in_schema=False)
@@ -98,3 +98,24 @@ async def get(max: Union[str, None]= '10', index: Union[str, None] = '0'):
     json_compatible_item_data = jsonable_encoder(getAllSensors(int(max), int(index)))
     return JSONResponse(content=json_compatible_item_data)
 
+@app.delete('/deleteSite', include_in_schema=False)
+async def delete(id: str):
+    try:
+        result = deleteSite(id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al eliminar el sensor")
+@app.delete('/deleteEquip', include_in_schema=False)
+async def delete(id: str):
+    try:
+        result = deleteEquip(id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al eliminar el sensor")
+@app.delete('/deleteSensor', include_in_schema=False)
+async def delete(id: str):
+    try:
+        result = deleteSensor(id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al eliminar el sensor")
