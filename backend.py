@@ -33,7 +33,7 @@ class sensor(BaseModel):
 class sensors(BaseModel):
     id: str
     data: list[dataModel]
-    sensedAt: str
+    sensedAt: str | None
 
 
 class equipo(BaseModel):
@@ -85,7 +85,7 @@ def input_multiple_data(sensed: sensors):
     try:
         if (validar_existencia(sensed)):
             d = sensed.sensedAt
-            if (d == ''):
+            if (d == '' or d is None):
                 d = datetime.datetime.now(pytz.utc)
             else:
                 d = datetime.datetime.strptime(sensed.sensedAt, '%Y-%m-%dT%H:%M:%S')

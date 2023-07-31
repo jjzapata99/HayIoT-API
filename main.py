@@ -35,7 +35,7 @@ class equipo(BaseModel):
 class sensores(BaseModel):
     id: str
     data: list[dataModel]
-    sensedAt : str
+    sensedAt : str | None
 class site(BaseModel):
     id: str
     site: str
