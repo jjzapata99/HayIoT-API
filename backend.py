@@ -1,5 +1,6 @@
 import math
 from http.client import HTTPException
+from typing import Union
 
 import psycopg2 as psycopg2
 import pymongo
@@ -33,7 +34,7 @@ class sensor(BaseModel):
 class sensors(BaseModel):
     id: str
     data: list[dataModel]
-    sensedAt: str | None
+    sensedAt: Union[str, None]
 
 
 class equipo(BaseModel):

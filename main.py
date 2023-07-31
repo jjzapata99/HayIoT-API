@@ -1,6 +1,7 @@
 import asyncio
 import concurrent.futures
 import json
+from typing import Union
 
 from fastapi import FastAPI
 from typing import Union
@@ -35,7 +36,7 @@ class equipo(BaseModel):
 class sensores(BaseModel):
     id: str
     data: list[dataModel]
-    sensedAt : str | None
+    sensedAt : Union[str, None]
 class site(BaseModel):
     id: str
     site: str
