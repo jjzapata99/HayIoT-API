@@ -12,7 +12,6 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 import requests
 
-
 url = "https://project-haystack.org/download/defs.json"
 
 class dataModel(BaseModel):
@@ -122,6 +121,34 @@ def getLastDate(id : str):
     except Exception as e:
         print(f'{e}')
 
+
+def getDataWeb(id, start, end):
+    try:
+        format = '%d/%m/%Y'
+        if(len(start)>10):
+            format= format+' %H:%M:%S'
+        if not(len(end) > 10):
+            end = end +" 23:59:59"
+        query = {'sensedAt': {'$gte': datetime.datetime.strptime(start, format),
+                              '$lt': datetime.datetime.strptime(end, '%d/%m/%Y %H:%M:%S')},
+                 'id_sensor': id}
+        df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1})))
+        if(df_sensed.size>2):
+            val = df_sensed['sensedAt'].max()- df_sensed['sensedAt'].min()
+            if (val.days > 0):
+                time = str((val.days)*4)+'T'
+            else:
+                d = df_sensed['sensedAt'].drop_duplicates().reset_index()
+                t =d['sensedAt'][1]-d['sensedAt'][0]
+                time = str(int(t.seconds *2.5))+'s'
+            df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True).reset_index()
+            df_sensed['data']=df_sensed['data'].fillna(0)
+        df = df_sensed.to_dict(orient='records')
+        if df_sensed.size >= 1:
+            return df
+    except Exception as e:
+        print(f'{e}')
+        return []
 
 def getData(id, start, end):
     try:

@@ -60,8 +60,11 @@ app.add_middleware(
 async def create_items(item: sensores):
     return input_multiple_data(item)
 @app.get("/getData")
-async def get(id: str, start: str, end: str):
+def get(id: str, start: str, end: str):
      return getData(id,start, end)
+@app.get("/getDataWeb")
+def get(id: str, start: str, end: str):
+    return getDataWeb(id,start, end)
 
 @app.get("/getHaystackTags")
 async def get():
