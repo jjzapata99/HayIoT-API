@@ -41,7 +41,7 @@ class site(BaseModel):
     id: str
     site: str
 app = FastAPI(
-    title= 'HayIoT', description= 'Integradora', version= '1.1.0',
+    title= 'HayIoT', description= 'Proyecto HayIoT, estandarización de sensores', version= '0.0.1',
     redoc_url=None
 
 )
