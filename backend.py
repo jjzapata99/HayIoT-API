@@ -141,9 +141,9 @@ def getDataWeb(id, start, end):
                 d = df_sensed['sensedAt'].drop_duplicates().reset_index()
                 t =d['sensedAt'][1]-d['sensedAt'][0]
                 time = str(int(t.seconds *2.5))+'s'
-            df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True).reset_index()
+            df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True)
             df_sensed['data']=df_sensed['data'].fillna(0)
-        df = df_sensed.to_dict(orient='records')
+        df = df_sensed.sort_values('sensedAt').reset_index().to_dict(orient='records')
         if df_sensed.size >= 1:
             return df
     except Exception as e:
