@@ -62,6 +62,9 @@ async def create_items(item: sensores):
 @app.get("/getData")
 def get(id: str, start: str, end: str):
      return getData(id,start, end)
+@app.get("/getSpecificData")
+def get(id: str, start: str, end: str, type:str):
+    return getSpecificData(id,start, end, type)
 @app.get("/getDataWeb", include_in_schema=False)
 def get(id: str, start: str, end: str):
     return getDataWeb(id,start, end)
