@@ -2,7 +2,7 @@ import asyncio
 import concurrent.futures
 import json
 from typing import Union
-
+import ssl
 from fastapi import FastAPI
 from typing import Union
 from pydantic import BaseModel
@@ -72,6 +72,10 @@ def get(id: str, start: str, end: str):
 @app.get("/getHaystackTags")
 async def get():
     json_compatible_item_data = jsonable_encoder(get_Haystack_tags())
+    return json_compatible_item_data
+@app.get("/getTags")
+async def get():
+    json_compatible_item_data = jsonable_encoder(get_tags())
     return json_compatible_item_data
 @app.get('/getSensors', include_in_schema=False)
 async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):

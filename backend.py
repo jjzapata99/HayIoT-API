@@ -323,21 +323,31 @@ def deleteSensor(sensor_id: str):
         postgresdb.rollback()
         raise HTTPException(status_code=500, detail="Error al eliminar")
 
+def get_tags():
+    try:
+        postgres.execute("SELECT * FROM tag")
+        query = postgres.fetchall()
+        resp = []
+        for a,b in query:
+            resp.append({'id':a, 'tag':b})
+        return resp
+    except requests.exceptions.RequestException as e:
+        print(f"Error al hacer la solicitud GET: {e}")
 def get_Haystack_tags():
     try:
-        response = requests.get(url)
+        response = requests.get('https://project-haystack.org/download/defs.json')
         if response.status_code == 200:
             datos= response.json()
             tags = []
             for obj in datos['rows']:
-                if obj:
+                if obj and 'prefUnit' in obj:
                     json_data = {
                         "tag": obj['def']['val'],
-                        "description": obj['doc'].replace('\n', ' ')
+                        'desc': obj['doc'],
+                        "unit": obj['prefUnit']
+
                     }
                     tags.append(json_data)
             return tags
-        else:
-            print(f"Error al hacer la solicitud GET. Código de estado: {response.status_code}")
     except requests.exceptions.RequestException as e:
         print(f"Error al hacer la solicitud GET: {e}")
