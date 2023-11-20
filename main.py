@@ -29,6 +29,7 @@ class sensor(BaseModel):
     equipRef: str
     description: str
     type: str
+    tag: list[int]
 class equipo(BaseModel):
     id: str
     siteRef: str
@@ -40,6 +41,11 @@ class sensores(BaseModel):
 class site(BaseModel):
     id: str
     site: str
+class dataWeb(BaseModel):
+    id: str
+    start: str
+    end: str
+    tags: Union[list[str], None]
 app = FastAPI(
     title= 'HayIoT', description= 'Proyecto HayIoT, estandarización de sensores', version= '0.0.1',
     redoc_url=None
@@ -65,9 +71,9 @@ def get(id: str, start: str, end: str):
 @app.get("/getSpecificData")
 def get(id: str, start: str, end: str, type:str):
     return getSpecificData(id,start, end, type)
-@app.get("/getDataWeb", include_in_schema=False)
-def get(id: str, start: str, end: str):
-    return getDataWeb(id,start, end)
+@app.post("/getDataWeb", include_in_schema=True)
+def post(data : dataWeb):
+    return getDataWeb(data)
 
 @app.get("/getHaystackTags")
 async def get():
@@ -84,7 +90,7 @@ async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' )
 @app.get("/getLastSensed", include_in_schema=False)
 async def create_items(id:str):
     return getLastDate(id)
-@app.post("/pushSensor/", include_in_schema=False)
+@app.post("/pushSensor/", include_in_schema=True)
 async def create_items(item: sensor):
     return input_page_data_sensor(item)
 @app.post("/pushEquip/", include_in_schema=False)
