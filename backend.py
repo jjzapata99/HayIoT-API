@@ -62,7 +62,7 @@ client = MongoClient('mongodb://200.126.14.233:27017/')
 
 tages = []
 tagList=["Power", "ApparentPower", "ReactivePower", "Factor", "Voltage", "Current",
-         "humedad", "temperatura", "velocidad", "estado",
+         "humedad", "temperatura", "velocidad", "estado","temp_aire",
          "humedity", "temperature",
          "Valvula", "Humedad",
          "voltaje_B","voltaje_A","voltaje_C", "energia_C", "energia_B", "energia_A", "factor_potencia_C", "factor_potencia_A", "factor_potencia_B", "potencia_C","potencia_B","potencia_A", "corriente_C","corriente_A","corriente_B",
@@ -76,7 +76,7 @@ devices = [{'d':['648ca81672114d2f0457eb89', '648ca97e72114d2f0457ebaf', '648ca9
         '64ee46aab6877e78eeea65fd', '64ee46c8b6877e78eeea664b', '64ee46e4b6877e78eeea6697', '64ee46fb65540448be7e7d48',
         '64ee47143793664c6df9e86f',
         '64ee4728b6877e78eeea670a', '64ee46563793664c6df9e6d1', '648ca96a72114d2f0457eba0', '648ca97f72114d2f0457ebb7'], 'tags':["Power", "ApparentPower", "ReactivePower", "Factor", "Voltage", "Current"] },
-           {'d':['64ac3680dc5442c4e078a0f9'], 'tags': ["humedad", "temperatura", "velocidad", "estado"]},
+           {'d':['64ac3680dc5442c4e078a0f9'], 'tags': ["humedad", "temperatura", "velocidad", "estado", "temp_aire"]},
            {'d':['64d30423e60fb2d1e556ae12'], 'tags':["Valvula", "Humedad"]},
            {'d':['64a474789f3db7cd3e9b53f7'],'tags':["humedity", "temperature"]},
            {'d':['64ad81a0dc5442c4e0796382','64ac62fcdc5442c4e078bb14'],'tags':["voltaje_B","voltaje_A","voltaje_C", "energia_C", "energia_B", "energia_A", "factor_potencia_C", "factor_potencia_A", "factor_potencia_B", "potencia_C","potencia_B","potencia_A", "corriente_C","corriente_A","corriente_B"]},
