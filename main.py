@@ -71,7 +71,7 @@ def get(id: str, start: str, end: str):
 @app.get(baseUrl+"/getSpecificData")
 def get(id: str, start: str, end: str, type:str):
     return getSpecificData(id,start, end, type)
-@app.post(baseUrl+"/getDataWeb", include_in_schema=True)
+@app.post(baseUrl+"/getDataWeb", include_in_schema=False)
 def post(data : dataWeb):
     return getDataWeb(data)
 
@@ -79,7 +79,7 @@ def post(data : dataWeb):
 async def get():
     json_compatible_item_data = jsonable_encoder(get_Haystack_tags())
     return json_compatible_item_data
-@app.get(baseUrl+"/getTags")
+@app.get(baseUrl+"/getTags", include_in_schema=False)
 async def get():
     json_compatible_item_data = jsonable_encoder(get_tags())
     return json_compatible_item_data
@@ -90,7 +90,7 @@ async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' )
 @app.get(baseUrl+"/getLastSensed", include_in_schema=False)
 async def create_items(id:str):
     return getLastDate(id)
-@app.post(baseUrl+"/pushSensor/", include_in_schema=True)
+@app.post(baseUrl+"/pushSensor/", include_in_schema=False)
 async def create_items(item: sensor):
     return input_page_data_sensor(item)
 @app.post(baseUrl+"/pushEquip/", include_in_schema=False)
