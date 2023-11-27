@@ -53,12 +53,13 @@ class dataWeb(BaseModel):
     end: str
     tags: Union[list[str], None]
 postgresdb = psycopg2.connect(
-    host="200.126.14.233",
+    host="200.126.14.228",
     database="HayIoT",
     user="administrator",
+    port= 3309,
     password="root1234")
 postgres = postgresdb.cursor()
-client = MongoClient('mongodb://200.126.14.233:27017/')
+client = MongoClient('mongodb://200.126.14.228:3310/')
 
 tages = []
 tagList=["Power", "ApparentPower", "ReactivePower", "Factor", "Voltage", "Current",
