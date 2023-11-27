@@ -47,8 +47,8 @@ class dataWeb(BaseModel):
     end: str
     tags: Union[list[str], None]
 app = FastAPI(
-    title= 'HayIoT', description= 'Proyecto HayIoT, estandarización de sensores', version= '0.0.1',
-    redoc_url=None, root_path_in_servers=True, root_path="/api/hayiot"
+    title= 'HayIoT', description= 'Proyecto HayIoT, estandarización de sensores', version= '0.0.1', openapi_url= "/api/hayiot/openapi.json",
+    redoc_url=None, docs_url="/api/hayiot/docs",root_path_in_servers=True, root_path="/api/hayiot"
 
 )
 origins = [
@@ -61,7 +61,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-baseUrl = ""
+baseUrl = "/api/hayiot"
 @app.post(baseUrl+"/sensores/")
 async def create_items(item: sensores):
     return input_multiple_data(item)
