@@ -48,7 +48,7 @@ class dataWeb(BaseModel):
     tags: Union[list[str], None]
 app = FastAPI(
     title= 'HayIoT', description= 'Proyecto HayIoT, estandarización de sensores', version= '0.0.1', openapi_url= "/api/hayiot/openapi.json",
-    redoc_url=None, docs_url="/api/hayiot/docs",root_path_in_servers=True, root_path="/api/hayiot"
+    redoc_url=None, docs_url="/api/hayiot/docs"
 
 )
 origins = [
