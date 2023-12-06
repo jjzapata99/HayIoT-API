@@ -1,7 +1,7 @@
 import math
 from http.client import HTTPException
 from typing import Union
-
+from statistics import mode
 import psycopg2 as psycopg2
 import pymongo
 import pytz
@@ -52,13 +52,17 @@ class dataWeb(BaseModel):
     start: str
     end: str
     tags: Union[list[str], None]
-postgresdb = psycopg2.connect(
-    host="200.126.14.228",
-    database="HayIoT",
-    user="administrator",
-    port= 3309,
-    password="root1234")
-postgres = postgresdb.cursor()
+try:
+    postgresdb = psycopg2.connect(
+        host="200.126.14.228",
+        database="HayIoT",
+        user="administrator",
+        port= 3309,
+        password="root1234")
+    postgres = postgresdb.cursor()
+
+except:
+    print('Error al conectarse a la base de datos')
 client = MongoClient('mongodb://200.126.14.228:3310/')
 
 tages = []
@@ -200,8 +204,13 @@ def getDataWeb(data: dataWeb):
                 time = str((val.days)*4)+'T'
             else:
                 d = df_sensed['sensedAt'].drop_duplicates().reset_index()
-                t =d['sensedAt'][1]-d['sensedAt'][0]
-                time = str(int(t.seconds *2.5))+'s'
+                fechas = [pd.to_datetime(fecha, format='%Y-%m-%d %H:%M:%S') for fecha in d['sensedAt']]
+                diferencias_segundos = [(fechas[i+1] - fechas[i]).total_seconds() for i in range(len(fechas)-1)]
+                contador = mode(diferencias_segundos)
+                if len(d) < 18:
+                    time = str(int(contador))+'s'
+                else:
+                    time = str(int(contador *8.5))+'s'
             df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True)
             df_sensed['data']=df_sensed['data'].fillna(0)
         df = df_sensed.sort_values('sensedAt').reset_index().to_dict(orient='records')
