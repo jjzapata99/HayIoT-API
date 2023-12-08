@@ -86,7 +86,7 @@ async def get():
 async def get():
     json_compatible_item_data = jsonable_encoder(get_tags())
     return json_compatible_item_data
-@app.post(baseUrl+"/getLastData", include_in_schema=True)
+@app.post(baseUrl+"/getLastData", include_in_schema=False)
 async def get(d:dataLast):
     json_compatible_item_data = jsonable_encoder(get_last_data(d))
     return json_compatible_item_data
