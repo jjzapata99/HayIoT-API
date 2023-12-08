@@ -30,7 +30,9 @@ class sensor(BaseModel):
     type: str
     tag: list[int]
 
-
+class dataLast(BaseModel):
+    id: str
+    tags: list[str]
 class sensors(BaseModel):
     id: str
     data: list[dataModel]
@@ -210,7 +212,7 @@ def getDataWeb(data: dataWeb):
                 if len(d) < 18:
                     time = str(int(contador))+'s'
                 else:
-                    time = str(int(contador *8.5))+'s'
+                    time = str(int(contador *10.5))+'s'
             df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True)
             df_sensed['data']=df_sensed['data'].fillna(0)
         df = df_sensed.sort_values('sensedAt').reset_index().to_dict(orient='records')
@@ -419,7 +421,21 @@ def get_Haystack_tags():
         return tages
     except requests.exceptions.RequestException as e:
         print(f"Error al hacer la solicitud GET: {e}")
-
+def get_last_data(d: dataLast):
+    try:
+        less = (datetime.datetime.now(pytz.utc) - datetime.timedelta(hours=1))
+        plux = datetime.datetime.now(pytz.utc) + datetime.timedelta(hours=1)
+        final = []
+        for tag in d.tags:
+            query = {
+                'sensedAt': {'$gte': datetime.datetime.strptime(less.strftime('%d/%m/%Y %H:%M:%S'), '%d/%m/%Y %H:%M:%S'),
+                                  '$lt': datetime.datetime.strptime(plux.strftime('%d/%m/%Y %H:%M:%S'),'%d/%m/%Y %H:%M:%S')},
+                     'id_sensor': d.id, 'type':tag}
+            resultado = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1}).sort('sensedAt', pymongo.DESCENDING).limit(1)))
+            final.append(resultado.to_dict(orient='records')[0])
+        return final
+    except requests.exceptions.RequestException as e:
+        print(f"Error al hacer la solicitud GET: {e}")
 try:
     response = requests.get('https://project-haystack.org/download/defs.json')
     if response.status_code == 200:

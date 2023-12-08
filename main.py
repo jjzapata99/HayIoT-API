@@ -18,6 +18,9 @@ from backend import *
 class dataModel(BaseModel):
     val: float
     type: str
+class dataLast(BaseModel):
+    id: str
+    tags: list[str]
 class sensorPage(BaseModel):
     id: str
     siteRef: str
@@ -82,6 +85,10 @@ async def get():
 @app.get(baseUrl+"/getTags", include_in_schema=False)
 async def get():
     json_compatible_item_data = jsonable_encoder(get_tags())
+    return json_compatible_item_data
+@app.post(baseUrl+"/getLastData", include_in_schema=True)
+async def get(d:dataLast):
+    json_compatible_item_data = jsonable_encoder(get_last_data(d))
     return json_compatible_item_data
 @app.get(baseUrl+'/getSensors', include_in_schema=False)
 async def get(id : str = '', name : str = '', max: str= '10', index: str = '0' ):
