@@ -432,7 +432,10 @@ def get_last_data(d: dataLast):
                                   '$lt': datetime.datetime.strptime(plux.strftime('%d/%m/%Y %H:%M:%S'),'%d/%m/%Y %H:%M:%S')},
                      'id_sensor': d.id, 'type':tag}
             resultado = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1}).sort('sensedAt', pymongo.DESCENDING).limit(1)))
-            final.append(resultado.to_dict(orient='records')[0])
+            if resultado.size> 0:
+                final.append(resultado.to_dict(orient='records')[0])
+            else:
+                final= [{}]
         return final
     except requests.exceptions.RequestException as e:
         print(f"Error al hacer la solicitud GET: {e}")
