@@ -3,7 +3,7 @@ import concurrent.futures
 import json
 from typing import Union
 import ssl
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from typing import Union
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -70,13 +70,17 @@ async def create_items(item: sensores):
     return input_multiple_data(item)
 @app.get(baseUrl+"/getData")
 def get(id: str, start: str, end: str):
-     return getData(id,start, end)
+    return Response(getData(id,start, end), media_type='application/json')
+@app.get(baseUrl+"/downloadData")
+def get(id: str, start: str, end: str):
+     headers = {'Content-Disposition': 'attachment; filename="data.json"'}
+     return Response(getData(id,start, end), headers=headers, media_type='application/json')
 @app.get(baseUrl+"/getSpecificData")
 def get(id: str, start: str, end: str, type:str):
-    return getSpecificData(id,start, end, type)
+    return Response(getSpecificData(id,start, end, type), media_type="application/json")
 @app.post(baseUrl+"/getDataWeb", include_in_schema=False)
 def post(data : dataWeb):
-    return getDataWeb(data)
+    return Response(getDataWeb(data), media_type="application/json")
 
 @app.get(baseUrl+"/getHaystackTags")
 async def get():

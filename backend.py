@@ -1,3 +1,4 @@
+import json
 import math
 from http.client import HTTPException
 from typing import Union
@@ -11,7 +12,8 @@ import pandas as pd
 from pydantic import BaseModel
 from pymongo import MongoClient
 import requests
-
+from bson.json_util import dumps
+import ujson
 url = "https://project-haystack.org/download/defs.json"
 
 class dataModel(BaseModel):
@@ -215,12 +217,12 @@ def getDataWeb(data: dataWeb):
                     time = str(int(contador *10.5))+'s'
             df_sensed =df_sensed.set_index('sensedAt').groupby('type').resample(time).mean(numeric_only=True)
             df_sensed['data']=df_sensed['data'].fillna(0)
-        df = df_sensed.sort_values('sensedAt').reset_index().to_dict(orient='records')
+        df = df_sensed.sort_values('sensedAt').reset_index().to_json(orient='records')
         if df_sensed.size >= 1:
             return df
     except Exception as e:
         print(f'{e}')
-        return []
+        return json.dumps([])
 
 def getData(id, start, end):
     try:
@@ -233,12 +235,12 @@ def getData(id, start, end):
                               '$lt': datetime.datetime.strptime(end, '%d/%m/%Y %H:%M:%S')},
                  'id_sensor': id}
         df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1})))
-        df = df_sensed.to_dict(orient='records')
+        df = df_sensed.to_json(orient='records', date_format='iso', date_unit='s')
         if df_sensed.size >= 1:
             return df
     except Exception as e:
         print(f'{e}')
-        return []
+        return json.dumps([])
 
 def getSpecificData(id, start, end, type):
     try:
@@ -251,12 +253,12 @@ def getSpecificData(id, start, end, type):
                               '$lt': datetime.datetime.strptime(end, '%d/%m/%Y %H:%M:%S')},
                  'id_sensor': id, 'type':type}
         df_sensed = pd.DataFrame(list(c_sensor.find(query, {"_id":0, "data":1, "type":1, "sensedAt":1})))
-        df = df_sensed.to_dict(orient='records')
+        df = df_sensed.to_json(orient='records', date_format='iso', date_unit='s')
         if df_sensed.size >= 1:
             return df
     except Exception as e:
         print(f'{e}')
-        return []
+        return json.dumps([])
 
 def input_page_data_sensor(s: sensor):
     try:
