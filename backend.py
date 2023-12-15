@@ -13,7 +13,6 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 import requests
 from bson.json_util import dumps
-import ujson
 url = "https://project-haystack.org/download/defs.json"
 
 class dataModel(BaseModel):
