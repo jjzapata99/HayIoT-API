@@ -87,7 +87,7 @@ devices = [{'d':['648ca81672114d2f0457eb89', '648ca97e72114d2f0457ebaf', '648ca9
            {'d':['64ac3680dc5442c4e078a0f9'], 'tags': ["humedad", "temperatura", "velocidad", "estado", "temp_aire"]},
            {'d':['64d30423e60fb2d1e556ae12'], 'tags':["Valvula", "Humedad"]},
            {'d':['64a474789f3db7cd3e9b53f7'],'tags':["humedity", "temperature"]},
-           {'d':['64ad81a0dc5442c4e0796382','64ac62fcdc5442c4e078bb14'],'tags':["voltaje_B","voltaje_A","voltaje_C", "energia_C", "energia_B", "energia_A", "factor_potencia_C", "factor_potencia_A", "factor_potencia_B", "potencia_C","potencia_B","potencia_A", "corriente_C","corriente_A","corriente_B"]},
+           {'d':['64ad81a0dc5442c4e0796382','64ac62fcdc5442c4e078bb14', '658b00dbeaaab7bc755110ec', '658b0195df926417e987e76b'],'tags':["voltaje_B","voltaje_A","voltaje_C", "energia_C", "energia_B", "energia_A", "factor_potencia_C", "factor_potencia_A", "factor_potencia_B", "potencia_C","potencia_B","potencia_A", "corriente_C","corriente_A","corriente_B"]},
            {'d':['64d138d84659308ea6bc00b8'], 'tags':["potencia_1","potencia_2","potencia_3", "FP_1","FP_2","FP_3",  "frecuencia", "value", "voltaje",  "corriente_1", "corriente_2", "corriente_3"]}]
 
 
